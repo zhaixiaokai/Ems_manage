@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_ent">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="t_ent" type="com.sohu.edm.dao.map.T_ent"/>
+	<resultMap id="t_ent" class="t_ent">
+		<result property="id" column="id"/>
+		<result property="entId" column="ent_id"/>
+		<result property="entName" column="ent_name"/>
+		<result property="entPoint" column="ent_points"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="scUser" column="sc_user"/>
+		<result property="scKey" column="sc_key"/>
+		<result property="scTestUser" column="sc_test_user"/>
+		<result property="scTestKey" column="sc_test_key"/>
+		<result property="trade" column="trade"/>
+		<result property="domain" column="domain"/>
+		<result property="website" column="website"/>
+		<result property="adminAccount" column="admin_account"/>
+		<result property="adminPsw" column="admin_psw"/>
+		<result property="contact" column="contact"/>
+		<result property="contactTel" column="contact_tel"/>
+		<result property="freq" column="freq"/>
+		<result property="singleTransNum" column="single_trans_num"/>
+	</resultMap>
+	
+	<statement id="getAll" resultMap="t_ent">
+		select * from t_ent
+	</statement>
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from t_ent
+	</statement>
+	<statement id="getEntByPage" resultMap="t_ent" parameterClass="java.util.Map">
+		select * from t_ent order by create_time desc
+			limit $start$,$end$
+	</statement>
+	
+	<statement id="addEnt" parameterClass="t_ent">
+		insert into t_ent (ent_id,ent_name,ent_points,create_time,sc_user,sc_key,
+		sc_test_user,sc_test_key,trade,domain,website,admin_account,admin_psw,contact,
+		contact_tel,freq,single_trans_num)
+		values(nextval('ent_seq'),#entName#,$entPoint$,now(),#scUser#,#scKey#,#scTestUser#,
+		#scTestKey#,$trade$,#domain#,#website#,#adminAccount#,#adminPsw#,#contact#,
+		#contactTel#,$freq$,$singleTransNum$)
+	</statement>
+	
+	<statement id="queryByTimeAndEntName" parameterClass="java.util.Map" resultMap="t_ent">
+	<![CDATA[ 
+		select * from t_ent where (create_time>=#start# and create_time<#end#)
+	]]>
+	<isNotEmpty>
+		<isNotEqual compareProperty="entName" compareValue="" prepend="and">
+			ent_name like '%$entName$%'
+		</isNotEqual>
+	</isNotEmpty>
+	</statement>
+	<statement id="getTotalRowByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	<![CDATA[ 
+		select count(*) from t_ent where (create_time>=#start# and create_time<#end#)
+	]]>
+	<isNotEqual property="entName" compareValue="-1" prepend="and">
+		ent_id = #entName# 
+	</isNotEqual>
+	</statement>
+	<statement id="queryByPageAndCondition" parameterClass="java.util.Map" resultMap="t_ent">
+	<![CDATA[ 
+		select * from t_ent where (create_time>=#startTime# and create_time<#endTime#) 
+	]]>
+	<isNotEqual property="entName" compareValue="-1" prepend="and">
+		ent_id = #entName# 
+	</isNotEqual>
+		order by create_time desc limit $start$,$end$
+	</statement>
+	
+	<statement id="getEntById" resultMap="t_ent" parameterClass="java.lang.Long">
+		select * from t_ent where id=$entId$
+	</statement>
+	
+	<statement id="getEntByEntId" resultMap="t_ent" parameterClass="java.lang.Integer">
+		select * from t_ent where ent_id=$entId$
+	</statement>
+	
+	<statement id="updateEnt" parameterClass="t_ent">
+		update t_ent set
+			ent_name=#entName#,
+			trade=$trade$,
+			domain=#domain#,
+			website=#website#,
+			admin_account=#adminAccount#,
+			admin_psw=#adminPsw#,
+			contact=#contact#,
+			contact_tel=#contactTel#,
+			freq=$freq$,
+			single_trans_num=$singleTransNum$,
+			unit=$unit$
+		where id=$id$
+	</statement>
+	
+	<statement id="getNumByEntName" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from t_ent where ent_name=#entName#
+	</statement>	
+	<statement id="getNumByEntNameModify" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from t_ent where ent_name=#entName# and id!=$entId$
+	</statement>
+	<statement id="getNumByAdminAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from t_ent where admin_account=#adminAccount#
+	</statement>	
+	<statement id="getNumByAdminAccountModify" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from t_ent where admin_account=#adminAccount# and id!=$entId$
+	</statement>	
+	<statement id="getEntUserNum" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from t_usr where ent_id=$entId$
+	</statement>
+	<statement id="getEntUserNumModify" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from t_usr where ent_id=$entId$ and ent_id!=$entId$
+	</statement>
+	
+	<statement id="getEntOptions" resultClass="java.util.HashMap">
+		select ent_id value,ent_name text from t_ent
+	</statement>
+	<statement id="addPointForEnt" parameterClass="java.util.Map">
+		update t_ent set ent_points=ent_points+$point$ where ent_id=$entId$
+	</statement>	
+	<statement id="getEntByEntName" parameterClass="java.lang.String" resultMap="t_ent">
+		select * from t_ent where ent_name=#getEntByEntName#
+	</statement>
+</sqlMap>
+

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_cost_record">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="t_cost_record" type="com.sohu.edm.dao.map.T_cost_record"/>
+	<resultMap id="t_cost_record" class="t_cost_record">
+		<result property="id" column="id"/>
+		<result property="ent_id" column="ent_id"/>
+		<result property="org_id" column="org_id"/>	
+		<result property="org_name" column="org_name"/>
+		<result property="user_id" column="user_id"/>
+		<result property="csm_type" column="csm_type"/>
+		<result property="points" column="points"/>
+		<result property="create_time" column="create_time"/>
+		<result property="update_time" column="update_time"/>
+		<result property="batch_id" column="batch_id"  nullValue="0"/>
+		<result property="proj_id" column="proj_id"  nullValue="0"/>
+		<result property="explain" column="exp"/>
+	</resultMap>
+	
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from t_cost_record where csm_type=1
+	</statement>
+	<statement id="getRecordByPage" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select 
+			r.ent_id,r.user_id,r.points,
+			DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') time,
+			r.exp,e.ent_name
+		from 
+			ems.t_cost_record r left join ems.t_ent e on r.ent_id=e.ent_id 
+		where r.csm_type=1 order by r.create_time desc limit $start$,$end$ 
+	</statement>
+	<statement id="addPointRecord" parameterClass="java.util.Map">
+		insert into t_cost_record 
+			(ent_id,org_id,user_id,csm_type,points,create_time,exp) 
+		values
+			($entId$,0,#userId#,1,$point$,now(),#explain#)
+	</statement>
+	
+	<statement id="getTotalRowByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from (
+			select 
+				r.ent_id,r.user_id,r.points,
+				DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') time,
+				r.exp,e.ent_name
+			from 
+				ems.t_cost_record r left join ems.t_ent e on r.ent_id=e.ent_id 
+			where r.csm_type=1 
+				and user_id like '%$opUserId$%'
+			<isNotEqual property="entId" compareValue="-1" prepend="and">
+				r.ent_id=$entId$
+			</isNotEqual>
+		) view
+	</statement>
+	<statement id="getRecordByPageAndCondition" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select 
+			r.ent_id,r.user_id,r.points,
+			DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') time,
+			r.exp,e.ent_name
+		from 
+			ems.t_cost_record r left join ems.t_ent e on r.ent_id=e.ent_id 
+		where r.csm_type=1 
+			and user_id like '%$opUserId$%'
+		<isNotEqual property="entId" compareValue="-1" prepend="and">
+			r.ent_id=$entId$
+		</isNotEqual>
+		 order by r.create_time desc
+		limit $start$,$end$ 
+	</statement>
+</sqlMap>
+

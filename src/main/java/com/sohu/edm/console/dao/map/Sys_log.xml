@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sys_log">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="sys_log" type="com.sohu.edm.console.dao.map.Sys_log"/>
+	<resultMap id="sys_log" class="sys_log">
+		<result property="id" column="id"/>
+		<result property="opUserId" column="op_userid"/>
+		<result property="accessIp" column="access_ip"/>
+		<result property="logType" column="log_type"/>
+		<result property="logDesc" column="log_desc"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	<statement id="getAll" resultMap="sys_log">
+		select * from sys_log
+	</statement>
+	<statement id="insertLog" parameterClass="sys_log">
+		insert into sys_log (op_userid,access_ip,log_type,log_desc,create_time)
+			values ($opUserId$,#accessIp#,$logType$,#logDesc#,now())
+	</statement>
+	<statement id="getLogByPage" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select 
+			l.id,l.op_userid,l.log_type,l.log_desc ,
+			DATE_FORMAT(l.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			u.user_name
+		from 
+			sys_log l
+		left join
+			sys_user u
+		on l.op_userid=u.id
+		
+		order by create_time desc limit $start$,$end$
+	</statement>
+	
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from sys_log
+	</statement>
+	
+	<statement id="getLogByPageAndCondition" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		<![CDATA[ 
+			select 
+				l.id,l.op_userid,l.log_type,l.log_desc ,
+				DATE_FORMAT(l.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+				u.user_name
+			from 
+				sys_log l
+			left join
+				sys_user u
+			on l.op_userid=u.id
+			where
+				(l.create_time>=#startTime# and l.create_time<=#endTime#) 
+			and
+				u.user_name like '%$opUser$%'
+			order by l.create_time desc limit $start$,$end$
+		]]>
+	</statement>
+	
+	<statement id="getTotalRowByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		<![CDATA[ 
+		select count(*) from(
+			select 
+				l.id,l.op_userid,l.log_type,l.log_desc ,
+				DATE_FORMAT(l.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+				u.user_name
+			from 
+				sys_log l
+			left join
+				sys_user u
+			on l.op_userid=u.id
+			where
+				(l.create_time>=#startTime# and l.create_time<=#endTime#) 
+			and
+				u.user_name like '%$opUser$%'
+		)view
+		]]>	
+	</statement>
+</sqlMap>
+

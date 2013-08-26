@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_mail_send">
+	<typeAlias alias="t_mail_send" type="com.sohu.edm.dao.map.T_mail_send" />
+	<resultMap id="t_mail_send" class="t_mail_send">
+		<result property="id" column="id" />
+		<result property="task_id" column="task_id" nullValue="0" />
+		<result property="batch_id" column="batch_id" nullValue="0" />
+		<result property="proj_id" column="proj_id" nullValue="0" />
+		<result property="drt_id" column="drt_id" nullValue="0" />
+		<result property="ent_id" column="ent_id" nullValue="0" />
+		<result property="org_id" column="org_id" nullValue="0" />
+		<result property="mail_name" column="mail_name" />
+		<result property="mail_subject" column="mail_subject" />
+		<result property="mail_fromname" column="mail_fromname" />
+		<result property="mail_fromaddr" column="mail_fromaddr" />
+		<result property="mail_file" column="mail_file" />
+		<result property="mail_source" column="mail_source" nullValue="0" />
+		<result property="mail_style" column="mail_style" nullValue="0" />
+		<result property="unsubscribe_style" column="unsubscribe_style"
+			nullValue="0" />
+		<result property="mail_tos" column="mail_tos" />
+		<result property="mail_num" column="mail_num" nullValue="0" />
+		<result property="mail_condition" column="mail_condition" />
+		<result property="send_type" column="send_type" nullValue="0" />
+		<result property="send_time" column="send_time" />
+		<result property="start_time" column="start_time" />
+		<result property="end_time" column="end_time" />
+		<result property="op_userid" column="op_userid" />
+		<result property="create_time" column="create_time" />
+		<result property="update_time" column="update_time" />
+		<result property="deliveryStatus" column="deliveryStatus"
+			nullValue="0" />
+		<result property="sendlist" column="sendlist" />
+		<result property="use_maillist" column="use_maillist" />
+		<result property="sc_num" column="sc_num" nullValue="0" />
+		<result property="upload_status" column="upload_status" nullValue="0" />
+		<result property="hook_num" column="hook_num" nullValue="0" />
+		<result property="archive_time" column="archive_time" />
+		<result property="retpoint_time" column="retpoint_time" />
+		<result property="archive_status" column="archive_status" nullValue="0" />
+		<result property="raw_message" column="raw_message"/>
+		<result property="attachment" column="attachment"/>
+	</resultMap>
+
+	<statement id="getAll"  resultMap="t_mail_send">
+		select * from t_mail_send
+	</statement>
+	
+	<statement id="getAllMailInfo" resultClass="java.util.Map">
+		select
+			m.mail_name,m.mail_subject,m.send_time,m.mail_fromaddr,
+			o.org_name,
+			e.ent_name,
+			m.mail_num,
+			b.paypoints,
+			b.retpoints,
+			b.actpoints
+		from
+			t_mail_send m
+		left join
+			t_org o on m.org_id=o.org_id
+		left join
+			t_ent e on e.ent_id=m.ent_id
+		left join
+			t_cost_bill b on m.batch_id=b.batch_id
+		order by batch_id
+	</statement>
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from t_mail_send
+	</statement>
+	<statement id="getMailInfoByPage" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select
+			m.mail_name,
+			m.mail_subject,
+			DATE_FORMAT(m.send_time,'%Y-%m-%d %H:%i:%s') send_time,
+			m.mail_fromaddr,
+			o.org_name,
+			e.ent_name,
+			m.mail_num,
+			b.paypoints,
+			b.retpoints,
+			b.actpoints
+		from
+			t_mail_send m
+		left join
+			t_org o on m.org_id=o.org_id
+		left join
+			t_ent e on e.ent_id=m.ent_id
+		left join
+			t_cost_bill b on m.batch_id=b.batch_id
+		order by send_time desc limit $start$,$end$
+	</statement>
+	<statement id="getMailInfoByPageAndCondition" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		
+	<![CDATA[ 
+	select
+			m.mail_name,
+			m.mail_subject,
+			DATE_FORMAT(m.send_time,'%Y-%m-%d %H:%i:%s') send_time,
+			m.mail_fromaddr,
+			o.org_name,
+			e.ent_name,
+			m.mail_num,
+			b.paypoints,
+			b.retpoints,
+			b.actpoints
+		from
+			t_mail_send m
+		left join
+			t_org o on m.org_id=o.org_id
+		left join
+			t_ent e on e.ent_id=m.ent_id
+		left join
+			t_cost_bill b on m.batch_id=b.batch_id
+		where 
+			(m.send_time>=#startTime# and m.send_time<#endTime#) 
+	]]>
+	<isNotEqual prepend="and" property="entName" compareValue="-1">
+		e.ent_id=#entName#
+	</isNotEqual>
+		and
+			m.mail_name like '%$mailName$%'
+		order by send_time desc limit $start$,$end$
+	</statement>
+	
+	<statement id="getTotalRowByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	<![CDATA[ 
+		select count(*) from (
+			select
+					m.mail_name,
+					m.mail_subject,
+					DATE_FORMAT(m.send_time,'%Y-%m-%d %H:%i:%s') send_time,
+					m.mail_fromaddr,
+					o.org_name,
+					e.ent_name,
+					m.mail_num,
+					b.paypoints,
+					b.retpoints,
+					b.actpoints
+				from
+					t_mail_send m
+				left join
+					t_org o on m.org_id=o.org_id
+				left join
+					t_ent e on e.ent_id=m.ent_id
+				left join
+					t_cost_bill b on m.batch_id=b.batch_id
+				where 
+					(m.send_time>=#startTime# and m.send_time<#endTime#) 
+	]]>
+	<isNotEqual prepend="and" property="entName" compareValue="-1">
+		e.ent_id=#entName#
+	</isNotEqual>
+				and
+					m.mail_name like '%$mailName$%'		
+		) view
+	</statement>
+</sqlMap>

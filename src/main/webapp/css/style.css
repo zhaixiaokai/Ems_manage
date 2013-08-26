@@ -1,0 +1,75 @@
+.red {
+	color: red
+}
+table {
+	font-family: Î¢ÈíÑÅºÚ;
+	font-size: 14px;
+	font-weight: normal;
+	font-style: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table th {
+	background-color: #E1E1E1;
+	white-space: nowrap;
+	padding: 2px 15px;
+}
+
+table td {
+	background-color: #FFF;
+	padding: 2px 15px;
+}
+
+table td a {
+	color: #2f85bc;
+	margin: 0 2px;
+	text-decoration: underline;
+}
+
+select option,select {
+	color: #6d6d6d;
+}
+
+a {
+	color: #2f85bc;
+}
+
+input[type="button"],input[type="reset"],input[type="submit"] {
+	font-family: "Tahoma", "Arial", "sans-serif";
+	font-size: 12px;
+	font-style: normal;
+	line-height: normal;
+	font-weight: normal;
+	text-decoration: none;
+	background-color: #efefef;
+	border-color: #aecde7;
+	border-style: solid;
+	border-width: 1px;
+	padding-top: 1px;
+}
+
+.disable{
+	color: gray;
+	text-decoration: none;
+}
+.notice{
+	width: 250px;
+	height: 20px;
+	background-color: eeeeee;
+	padding: 10px;
+	font-family:Î¢ÈíÑÅºÚ;
+	font-size:13px;
+	margin: 20px;
+}
+.notice1{
+	width: 250px;
+	height: 50px;
+	background-color: eeeeee;
+	padding: 10px;
+	font-family:Î¢ÈíÑÅºÚ;
+	font-size:13px;
+	margin: 20px;
+}

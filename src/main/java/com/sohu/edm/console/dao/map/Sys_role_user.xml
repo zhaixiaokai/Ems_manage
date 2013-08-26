@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sys_role_user">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="sys_role_user" type="com.sohu.edm.console.dao.map.Sys_role_user"/>
+	<resultMap id="sys_role_user" class="sys_role_user">
+		<result property="id" column="id"/>
+		<result property="userId" column="user_id"/>
+		<result property="roleId" column="role_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	<statement id="getAll" resultMap="sys_role_user">
+		select * from sys_role_user
+	</statement>
+	<statement id="delRole2UserByUserId" parameterClass="java.lang.Integer">
+		delete from sys_role_user where user_id=$userId$
+	</statement>
+	<statement id="delRole2UserByRoleId" parameterClass="java.lang.Integer">
+		delete from sys_role_user where role_id=$roleId$
+	</statement>
+	<statement id="getRolesByUserId" parameterClass="java.lang.Integer" resultMap="sys_role_user">
+		select * from sys_role_user where user_id=$userId$
+	</statement>
+	<statement id="getRolesIdByUserId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select distinct role_id from sys_role_user where user_id=$userId$
+	</statement>
+	<statement id="delUserFromRole" parameterClass="java.util.Map">
+		delete from sys_role_user where role_id=$roleId$ and user_id=$userId$
+	</statement>
+	<statement id="addUserIntoRole" parameterClass="java.util.Map">
+		insert into sys_role_user (user_id,role_id,create_time) values ($userId$,$roleId$,now());
+	</statement>
+	<statement id="getCountByUserIdAndRoleId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from sys_role_user where role_id=$roleId$ and user_id=$userId$
+	</statement>
+</sqlMap>
+

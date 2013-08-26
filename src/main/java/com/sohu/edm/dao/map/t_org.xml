@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_org">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="t_org" type="com.sohu.edm.dao.map.T_org"/>
+	<resultMap id="t_org" class="t_org">
+		<result property="id" column="id"/>
+		<result property="entId" column="ent_id" nullValue="0"/>
+		<result property="orgId" column="org_id" nullValue="0"/>
+		<result property="orgName" column="org_name"/>
+		<result property="orgPoints" column="org_points" nullValue="0"/>
+		<result property="orgMembers" column="org_members" nullValue="0"/>
+		<result property="opUserId" column="op_userid"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	
+
+</sqlMap>
+

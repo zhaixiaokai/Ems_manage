@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sys_perm">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="sys_perm" type="com.sohu.edm.console.dao.map.Sys_perm"/>
+	<resultMap id="sys_perm" class="sys_perm">
+		<result property="id" column="id"/>
+		<result property="type" column="type"/>
+		<result property="funId" column="fun_id"/>
+		<result property="entityId" column="entity_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	<statement id="getAll" resultMap="sys_perm">
+		select * from sys_perm
+	</statement>
+	<statement id="getByUserId" parameterClass="java.lang.Integer" resultMap="sys_perm">
+		select * from sys_perm where type=0 and entity_id=$userId$
+	</statement>
+	<statement id="delByUserId" parameterClass="java.lang.Integer">
+		delete from sys_perm where type=0 and entity_id=$userId$
+	</statement>
+	
+	<statement id="insertByUserId" parameterClass="java.util.Map">
+		insert into sys_perm (type,fun_id,entity_id,create_time) values (0,$funId$,$userId$,now())
+	</statement>
+	<statement id="getPermFunListByUserId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select fun_id from sys_perm where type=0 and entity_id=$userId$
+	</statement>	
+	<!-- 角色权限 -->
+	
+	<statement id="getByRoleId" parameterClass="java.lang.Integer" resultMap="sys_perm">
+		select * from sys_perm where type=1 and entity_id=$roleId$
+	</statement>
+		<statement id="getByRoleList" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select distinct fun_id from sys_perm where type=1 and entity_id in (#roleList#)
+	</statement>
+	<statement id="delByRoleId" parameterClass="java.lang.Integer">
+		delete from sys_perm where type=1 and entity_id=$roleId$
+	</statement>	
+	<statement id="insertByRoleId" parameterClass="java.util.Map">
+		insert into sys_perm (type,fun_id,entity_id,create_time) values (1,$funId$,$roleId$,now())
+	</statement>
+	
+	<statement id="getPermFunListByRole" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select fun_id from sys_perm where type=1 and entity_id=$roleId$
+	</statement>
+	<!-- 按角色和用户联合查询 -->
+
+	<statement id="getByRoleListAndUserIdParaList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select distinct fun_id from sys_perm where(type=0 and entity_id=$userId$)
+		<isNotEmpty prepend="or" property="roleList">
+			(type=1 and entity_id in
+			<iterate property="roleList" open="(" close=")" conjunction=",">
+				$roleList[]$   
+			</iterate>
+			)
+		</isNotEmpty>
+	</statement>
+</sqlMap>
+

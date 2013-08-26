@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="false" enhancementEnabled="true"
+		lazyLoadingEnabled="true" maxRequests="64" maxSessions="32"
+		maxTransactions="16" useStatementNamespaces="true" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_user.xml" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_fun.xml" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_log.xml" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_perm.xml" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_role_user.xml" />
+    <sqlMap resource="com/sohu/edm/console/dao/map/Sys_role.xml" />
+</sqlMapConfig>

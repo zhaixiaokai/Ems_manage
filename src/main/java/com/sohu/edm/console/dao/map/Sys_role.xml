@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sys_role">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="sys_role" type="com.sohu.edm.console.dao.map.Sys_role"/>
+	<resultMap id="sys_role" class="sys_role">
+		<result property="id" column="id"/>
+		<result property="roleName" column="role_name"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	<statement id="getAll" resultMap="sys_role">
+		select * from sys_role
+	</statement>
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from sys_role
+	</statement>
+	
+	<statement id="getNumByRoleName" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(*) from sys_role where role_name=#roleName#
+	</statement>
+		
+	<statement id="getNumByRoleNameModify" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+		select count(*) from sys_role where role_name=#roleName# and id!=$roleId$
+	</statement>
+	<statement id="getRoleByPage" parameterClass="java.util.Map" resultMap="sys_role">
+		select * from sys_role order by create_time desc  limit $start$,$end$
+	</statement>
+	<statement id="insertRole" parameterClass="sys_role">
+		insert into sys_role (role_name,create_time) values (#roleName#,now())
+	</statement>
+	<statement id="delRoleById" parameterClass="java.lang.Integer">
+		delete from sys_role where id=$id$
+	</statement>
+	<statement id="getRoleById" parameterClass="java.lang.Integer" resultMap="sys_role">
+		select * from sys_role where id=$id$
+	</statement>
+	<statement id="updateRole" parameterClass="sys_role">
+		update sys_role set role_name=#roleName# where id=$id$
+	</statement>
+	<statement id="getTotalRowByRoleName" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+		select count(*) from sys_role where role_name like '%$roleName$%'
+	</statement>
+	
+	<statement id="getRoleByRoleName" resultMap="sys_role" parameterClass="java.util.Map">
+		select * from sys_role where role_name like '%$roleName$%' order by create_time desc limit $start$,$end$
+	</statement>
+</sqlMap>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_usr">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="t_usr" type="com.sohu.edm.dao.map.T_usr"/>
+	<resultMap id="t_usr" class="t_usr">
+		<result property="id" column="id"/>
+		<result property="user_id" column="user_id"/>
+		<result property="user_pwd" column="user_pwd"/>
+		<result property="user_type" column="user_type" nullValue="0"/>
+		<result property="user_name" column="user_name"/>
+		<result property="ent_id" column="ent_id" nullValue="0"/>
+		<result property="org_id" column="org_id" nullValue="0"/>
+		<result property="user_priv" column="user_priv" nullValue="0"/>
+		<result property="op_userid" column="op_userid"/>
+		<result property="create_time" column="create_time"/>
+		<result property="update_time" column="update_time"/>
+	</resultMap>
+	
+	<statement id="getUserNumByUserName" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from t_usr where user_id=#userName#
+	</statement>
+</sqlMap>
+

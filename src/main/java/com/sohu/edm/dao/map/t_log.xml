@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="t_log">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="t_log" type="com.sohu.edm.dao.map.T_log"/>
+	<resultMap id="t_log" class="t_log">
+		<result property="id" column="id"/>
+		<result property="ent_id" column="ent_id"/>
+		<result property="org_id" column="org_id"/>
+		<result property="op_userid" column="op_userid"/>
+		<result property="access_ip" column="access_ip"/>
+		<result property="log_type" column="log_type"/>
+		<result property="log_desc" column="log_desc"/>
+		<result property="create_time" column="create_time"/>
+		<result property="update_time" column="update_time"/>
+		
+		<result property="log_op" column="log_op"/>
+		<result property="log_result" column="log_op"/>
+	</resultMap>
+	<statement id="getLogByPage" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		select 			
+			l.id,l.ent_id,l.org_id,l.op_userid,l.access_ip,l.log_type,l.log_desc,
+			DATE_FORMAT(l.create_time,'%Y-%m-%d %H:%i:%s') create_time,l.log_op,l.log_result,t.ent_name
+		from t_log l left join t_ent t on t.ent_id=l.ent_id order by l.create_time desc limit $start$,$end$
+	</statement>
+	<statement id="getTotalRow" resultClass="java.lang.Integer">
+		select count(*) from t_log
+	</statement>
+	<statement id="getTotalRowByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	<![CDATA[ 
+	select count(*) from(
+		select 
+			l.*,e.ent_name
+		from
+			t_log l left join t_ent e
+			on l.ent_id=e.ent_id
+		where
+			(l.create_time>=#startTime# and l.create_time<=#endTime#) 
+	]]>
+	<isNotEqual prepend="and" compareValue="-1" property="entName">
+		l.ent_id=#entName#
+	</isNotEqual>
+	<isNotEqual prepend="and" property="opType" compareValue="">
+		l.log_op like '%$opType$%'
+	</isNotEqual>
+		and
+			l.op_userid like '%$opUser$%'
+		) view
+	</statement>
+	
+	<statement id="getLogByPageAndCondition" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	<![CDATA[ 
+		select 
+			l.id,l.ent_id,l.org_id,l.op_userid,l.access_ip,l.log_type,l.log_desc,
+			DATE_FORMAT(l.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			e.ent_name,l.log_op,l.log_result
+		from
+			t_log l left join t_ent e
+			on l.ent_id=e.ent_id
+		where
+			(l.create_time>=#startTime# and l.create_time<=DATE_ADD(#endTime#,INTERVAL 1 DAY)) 
+	]]>	
+	<isNotEqual prepend="and" compareValue="-1" property="entName">
+		l.ent_id=#entName#
+	</isNotEqual>
+	<isNotEqual prepend="and" property="opType" compareValue="">
+		l.log_op like '%$opType$%'
+	</isNotEqual>
+		and
+			l.op_userid like '%$opUser$%'
+		order by l.create_time desc limit $start$,$end$
+	
+	</statement>
+	<statement id="insertLog" parameterClass="com.sohu.edm.dao.map.T_log">
+		insert into t_log 
+			(ent_id,org_id,op_userid,access_ip,log_type,log_desc,create_time,log_op,log_result)
+		values
+			($ent_id$,$org_id$,#op_userid#,#access_ip#,$log_type$,#log_desc#,now(),#log_op#,#log_result#)
+	</statement>
+</sqlMap>
+

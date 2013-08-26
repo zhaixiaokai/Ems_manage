@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sys_fun">
+	<cacheModel id="myCache" type="MEMORY">   
+	   <property name="reference-type" value="WEAK"/>   
+	</cacheModel>
+	<typeAlias alias="sys_fun" type="com.sohu.edm.console.dao.map.Sys_fun"/>
+	<resultMap id="sys_fun" class="sys_fun">
+		<result property="id" column="id"/>
+		<result property="funId" column="fun_id"/>
+		<result property="funName" column="fun_name"/>
+		<result property="pid" column="pid"/>
+		<result property="url" column="url"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+
+	
+	<statement id="getAll" resultMap="sys_fun">
+		select * from sys_fun
+	</statement>
+		
+	<statement id="getByPermList" resultMap="sys_fun" parameterClass="java.util.Map" >
+		select * from sys_fun  where fun_id in 
+		<isEmpty property="permList">
+			(0)
+		</isEmpty>
+		<isNotEmpty property="permList">
+			<iterate property="permList" open="(" close=")" conjunction=",">
+				$permList[]$   
+			</iterate>
+		</isNotEmpty>
+	</statement>
+	<statement id="getFunNameByIdList" resultClass="java.lang.String" parameterClass="java.util.Map" >
+		select fun_name from sys_fun  where fun_id in 
+		<isEmpty property="funIds">
+			(0)
+		</isEmpty>
+		<isNotEmpty property="funIds">
+			<iterate property="funIds" open="(" close=")" conjunction=",">
+				$funIds[]$   
+			</iterate>
+		</isNotEmpty>
+	</statement>	
+	
+</sqlMap>
+
